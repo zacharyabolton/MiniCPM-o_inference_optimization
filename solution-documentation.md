@@ -21,6 +21,16 @@ See `logs/profiling_1.txt`.
     - First response time consistently ~1.5s
 - Audo processing: ~0.000 not a bottleneck
 
+```txt
+AGGREGATE PERFORMANCE METRICS:
+   Average time to first byte: 1.598s
+   Average realtime factor: 1.062
+   Average generation time: 8.167s
+   Average audio processing time: 0.000s
+   TTFB std dev: 0.032s
+   Realtime factor std dev: 0.055
+```
+
 _Key Takaway_
 
 **Generation time is the primary bottleneck**

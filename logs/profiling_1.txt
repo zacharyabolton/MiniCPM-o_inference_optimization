@@ -1,0 +1,210 @@
+Starting model loading...
+Initializing MiniCPMo model...
+/usr/local/lib/python3.11/site-packages/transformers/models/auto/image_processing_auto.py:513: FutureWarning: The image_processor_class argument is deprecated and will be removed in v4.42. Please use `slow_image_processor_class`, or `fast_image_processor_class` instead
+  warnings.warn(
+Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.67s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.93s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.88s/it]
+Initializing TTS...
+   TTS INIT TIMING:
+   TTS bfloat16 conversion: 0.096s
+   Total TTS init: 0.828s
+   MODEL INIT TIMING:
+   Tokenizer load: 0.278s
+   Total model init: 35.831s
+✅ MiniCPMo initialized
+Initializing TTS...
+   TTS INIT TIMING:
+   TTS bfloat16 conversion: 0.003s
+   Total TTS init: 0.294s
+LOAD TIMING:
+   Model initialization: 35.831s
+   TTS initialization: 0.294s
+   Total load time: 36.125s
+
+Starting inference for: 'Hi, how are you?'
+MiniCPMo _run_inference() function called
+We detected that you are passing `past_key_values` as a tuple and this is deprecated and will be removed in v4.43. Please use an appropriate `Cache` class (https://huggingface.co/docs/transformers/v4.41.3/en/internal/generation_utils#transformers.Cache)
+The `seen_tokens` attribute is deprecated and will be removed in v4.41. Use the `cache_position` model input instead.
+We detected that you are passing `past_key_values` as a tuple and this is deprecated and will be removed in v4.43. Please use an appropriate `Cache` class (https://huggingface.co/docs/transformers/v4.41.3/en/internal/generation_utils#transformers.Cache)
+First response at: 4.028s after generation start
+   First byte received at: 5.061s
+   First audio received at: 5.062s
+Got text from MiniCPM: Hi, how are you?
+INFERENCE BREAKDOWN:
+   Prefill time: 1.019s
+   Generation time: 5.319s
+   First response time: 4.028s
+   Audio extract time: 0.000s
+   Response count: 5
+   Total inference time: 6.338s
+INFERENCE TIMING:
+   Time to first byte: 5.061s
+   Time to first audio: 5.062s
+   Generation time: 6.339s
+   Audio processing time: 0.000008610s
+   Audio concat time: 0.000069731s
+   Total time: 6.339s
+   Audio duration: 2.368s
+   Real-time factor: 2.677
+
+Starting inference for: 'I'm fine, thank you!'
+MiniCPMo _run_inference() function called
+First response at: 1.592s after generation start
+   First byte received at: 1.620s
+   First audio received at: 1.621s
+Got text from MiniCPM: I'm fine, thank you!
+Got text from MiniCPM: I'm fine, thank you!
+INFERENCE BREAKDOWN:
+   Prefill time: 0.029s
+   Generation time: 3.579s
+   First response time: 1.592s
+   Audio extract time: 0.000s
+   Response count: 6
+   Total inference time: 3.608s
+INFERENCE TIMING:
+   Time to first byte: 1.620s
+   Time to first audio: 1.621s
+   Generation time: 3.608s
+   Audio processing time: 0.000006960s
+   Audio concat time: 0.000051111s
+   Total time: 3.608s
+   Audio duration: 3.115s
+   Real-time factor: 1.158
+
+Starting inference for: 'What's your name?'
+MiniCPMo _run_inference() function called
+First response at: 1.547s after generation start
+   First byte received at: 1.574s
+   First audio received at: 1.574s
+Got text from MiniCPM: What's your name?
+Got text from MiniCPM: What's your name?
+INFERENCE BREAKDOWN:
+   Prefill time: 0.027s
+   Generation time: 8.508s
+   First response time: 1.547s
+   Audio extract time: 0.000s
+   Response count: 16
+   Total inference time: 8.536s
+INFERENCE TIMING:
+   Time to first byte: 1.574s
+   Time to first audio: 1.574s
+   Generation time: 8.536s
+   Audio processing time: 0.000009350s
+   Audio concat time: 0.000144262s
+   Total time: 8.536s
+   Audio duration: 8.320s
+   Real-time factor: 1.026
+
+Starting inference for: 'My name is John Doe'
+MiniCPMo _run_inference() function called
+First response at: 1.631s after generation start
+   First byte received at: 1.659s
+   First audio received at: 1.659s
+Got text from MiniCPM: My name is John Doe
+INFERENCE BREAKDOWN:
+   Prefill time: 0.027s
+   Generation time: 4.104s
+   First response time: 1.631s
+   Audio extract time: 0.000s
+   Response count: 7
+   Total inference time: 4.131s
+INFERENCE TIMING:
+   Time to first byte: 1.659s
+   Time to first audio: 1.659s
+   Generation time: 4.131s
+   Audio processing time: 0.000003730s
+   Audio concat time: 0.000099362s
+   Total time: 4.132s
+   Audio duration: 3.712s
+   Real-time factor: 1.113
+
+Starting inference for: 'What's your favorite color?'
+MiniCPMo _run_inference() function called
+First response at: 1.544s after generation start
+   First byte received at: 1.574s
+   First audio received at: 1.574s
+Got text from MiniCPM: What's your favorite color?
+Got text from MiniCPM: What's your favorite color?
+Got text from MiniCPM: What's your favorite color?
+Got text from MiniCPM: What's your favorite color?
+Got text from MiniCPM: What's your favorite color?
+Got text from MiniCPM: What's your favorite color?
+INFERENCE BREAKDOWN:
+   Prefill time: 0.030s
+   Generation time: 15.366s
+   First response time: 1.544s
+   Audio extract time: 0.001s
+   Response count: 29
+   Total inference time: 15.396s
+INFERENCE TIMING:
+   Time to first byte: 1.574s
+   Time to first audio: 1.574s
+   Generation time: 15.397s
+   Audio processing time: 0.000017091s
+   Audio concat time: 0.000171192s
+   Total time: 15.397s
+   Audio duration: 15.232s
+   Real-time factor: 1.011
+
+Starting inference for: 'My favorite color is blue'
+MiniCPMo _run_inference() function called
+First response at: 1.546s after generation start
+   First byte received at: 1.573s
+   First audio received at: 1.573s
+Got text from MiniCPM: My favorite color is blue
+Got text from MiniCPM: My favorite color is blue
+Got text from MiniCPM: My favorite color is blue
+INFERENCE BREAKDOWN:
+   Prefill time: 0.027s
+   Generation time: 8.274s
+   First response time: 1.546s
+   Audio extract time: 0.000s
+   Response count: 15
+   Total inference time: 8.301s
+INFERENCE TIMING:
+   Time to first byte: 1.573s
+   Time to first audio: 1.573s
+   Generation time: 8.302s
+   Audio processing time: 0.000008680s
+   Audio concat time: 0.000131432s
+   Total time: 8.302s
+   Audio duration: 7.979s
+   Real-time factor: 1.041
+
+Starting inference for: 'What's your favorite food?'
+MiniCPMo _run_inference() function called
+First response at: 1.557s after generation start
+   First byte received at: 1.586s
+   First audio received at: 1.586s
+Got text from MiniCPM: What's your favorite food?
+Got text from MiniCPM: What's your favorite food?
+Got text from MiniCPM: What's your favorite food?
+INFERENCE BREAKDOWN:
+   Prefill time: 0.027s
+   Generation time: 9.003s
+   First response time: 1.557s
+   Audio extract time: 0.000s
+   Response count: 17
+   Total inference time: 9.030s
+INFERENCE TIMING:
+   Time to first byte: 1.586s
+   Time to first audio: 1.586s
+   Generation time: 9.030s
+   Audio processing time: 0.000012980s
+   Audio concat time: 0.000138192s
+   Total time: 9.031s
+   Audio duration: 8.832s
+   Real-time factor: 1.022
+Wrote I'm fine, thank you!.wav to /Users/zacbolton/dev/Outspeed/mle-take-home/I'm fine, thank you!.wav
+Wrote What's your name?.wav to /Users/zacbolton/dev/Outspeed/mle-take-home/What's your name?.wav
+Wrote My name is John Doe.wav to /Users/zacbolton/dev/Outspeed/mle-take-home/My name is John Doe.wav
+Wrote What's your favorite color?.wav to /Users/zacbolton/dev/Outspeed/mle-take-home/What's your favorite color?.wav
+Wrote My favorite color is blue.wav to /Users/zacbolton/dev/Outspeed/mle-take-home/My favorite color is blue.wav
+Wrote What's your favorite food?.wav to /Users/zacbolton/dev/Outspeed/mle-take-home/What's your favorite food?.wav
+AGGREGATE PERFORMANCE METRICS:
+   Average time to first byte: 1.598s
+   Average realtime factor: 1.062
+   Average generation time: 8.167s
+   Average audio processing time: 0.000s
+   TTFB std dev: 0.032s
+   Realtime factor std dev: 0.055
+Stopping app - local entrypoint completed.

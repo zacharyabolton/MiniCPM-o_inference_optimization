@@ -45,7 +45,12 @@ class MiniCPMo:
         tokenizer_time = time.perf_counter() - tokenizer_start
 
         if device == "cuda":
+            print("Compiling model with torch.compile()...")
+            mode = "reduce-overhead"
+            self.model = torch.compile(self.model, mode=mode)
             self.init_tts()
+            # Also compile TTS
+            self.model.tts = torch.compile(self.model.tts, mode=mode)
 
         self._generate_audio = True
 

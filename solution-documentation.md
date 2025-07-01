@@ -156,3 +156,6 @@ AGGREGATE PERFORMANCE METRICS:
 
 Unfortunately this is a regression, so `sdpa` it is.
 
+### Quantization
+
+Went down a rabbit hole trying to use a pre-quantized version of MiniCPM-0-2_6 and enabling variable quantization with `BitsAndBytes`. Because of time constraints and container image complexity, this was tossed.

@@ -88,3 +88,43 @@ AGGREGATE PERFORMANCE METRICS:
 While the differences in many of the metrics are all close enough to be noise [^1], we will go with "reduce-overhead" given it's lower TTFB and realtime factor.
 
 [^1]: For production, we would run these exps many times to obtain statistically meaningful metrics.
+
+### Model Precision
+
+We're currently using bfloat13 but we can optimize this more using TF32 since we're on an A10G GPU: https://docs.pytorch.org/docs/stable/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices 
+
+The results of doing so are:
+
+```txt
+AGGREGATE PERFORMANCE METRICS:
+   Average time to first byte: 1.339s
+   Average realtime factor: 0.825
+   Average generation time: 10.069s
+   Average audio processing time: 0.000s
+   TTFB std dev: 0.010s
+   Realtime factor std dev: 0.073
+```
+
+```txt
+AGGREGATE PERFORMANCE METRICS:
+   Average time to first byte: 1.617s
+   Average realtime factor: 1.060
+   Average generation time: 8.089s
+   Average audio processing time: 0.000s
+   TTFB std dev: 0.038s
+   Realtime factor std dev: 0.034
+```
+
+```txt
+AGGREGATE PERFORMANCE METRICS:
+   Average time to first byte: 1.420s
+   Average realtime factor: 0.878
+   Average generation time: 6.093s
+   Average audio processing time: 0.000s
+   TTFB std dev: 0.069s
+   Realtime factor std dev: 0.049
+```
+
+Two of these three runs shows a nice bump, while one of them regresses back to our initial performance. This shows the variability and our perf measurements and begs for more robust benchmarking.
+
+For now, we will just run each test thrice to obtain more robust measures.

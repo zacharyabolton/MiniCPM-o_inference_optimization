@@ -25,6 +25,11 @@ class MiniCPMo:
         print(f"Initializing MiniCPMo model...")
         init_start = time.perf_counter()
 
+        # enable TF32 for A10G optimization
+        if device == "cuda":
+            torch.backends.cuda.matmul.allow_tf32 = True
+            torch.backends.cudnn.allow_tf32 = True
+
         self.model = (
             AutoModel.from_pretrained(
                 "openbmb/MiniCPM-o-2_6",
@@ -49,7 +54,7 @@ class MiniCPMo:
             mode = "reduce-overhead"
             self.model = torch.compile(self.model, mode=mode)
             self.init_tts()
-            # Also compile TTS
+            # also compile TTS
             self.model.tts = torch.compile(self.model.tts, mode=mode)
 
         self._generate_audio = True

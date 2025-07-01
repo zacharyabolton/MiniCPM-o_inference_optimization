@@ -8,6 +8,8 @@ from pydantic import BaseModel, ConfigDict
 import torch
 from transformers import AutoModel, AutoTokenizer
 
+import time
+
 INPUT_OUTPUT_AUDIO_SAMPLE_RATE = 24000
 
 class AudioData(BaseModel):
@@ -19,6 +21,9 @@ class AudioData(BaseModel):
 class MiniCPMo:
     def __init__(self, device: Literal["cpu", "cuda"] = "cuda", model_revision: str = "main"):
         super().__init__()
+
+        print(f"Initializing MiniCPMo model...")
+        init_start = time.perf_counter()
 
         self.model = (
             AutoModel.from_pretrained(
@@ -32,19 +37,38 @@ class MiniCPMo:
             .eval()
             .to(device)
         )
+
+        tokenizer_start = time.perf_counter()
         self._tokenizer = AutoTokenizer.from_pretrained(
             "openbmb/MiniCPM-o-2_6", trust_remote_code=True, revision=model_revision
         )
+        tokenizer_time = time.perf_counter() - tokenizer_start
 
         if device == "cuda":
             self.init_tts()
 
         self._generate_audio = True
-        print("✅ MiniCPMo initialized")
+
+        init_time = time.perf_counter() - init_start
+        print(f"MODEL INIT TIMING:")
+        print(f"   Tokenizer load: {tokenizer_time:.3f}s")
+        print(f"   Total model init: {init_time:.3f}s")
+        print("    ✅ MiniCPMo initialized")
 
     def init_tts(self):
+        print("Initializing TTS...")
+        tts_start = time.perf_counter()
+
         self.model.init_tts()
+
+        tts_bfloat_start = time.perf_counter()
         self.model.tts.bfloat16()
+        tts_bfloat_time = time.perf_counter() - tts_bfloat_start
+
+        tts_total_time = time.perf_counter() - tts_start
+        print(f"   TTS INIT TIMING:")
+        print(f"   TTS bfloat16 conversion: {tts_bfloat_time:.3f}s")
+        print(f"   Total TTS init: {tts_total_time:.3f}s")
 
     def _prefill_audio(
         self,
@@ -101,13 +125,19 @@ class MiniCPMo:
     def run_inference(self, prefill_data: List[str | AudioData]):
         print("MiniCPMo _run_inference() function called")
 
+        inference_start = time.perf_counter()
+
         try:
             self.session_id = str(uuid.uuid4())
 
+            # time prefill phase
+            prefill_start = time.perf_counter()
             if prefill_data:
                 self._prefill(data=prefill_data)
+            prefill_time = time.perf_counter() - prefill_start
 
-
+            # time generation phase
+            generation_start = time.perf_counter()
             response_generator = self.model.streaming_generate(
                 session_id=self.session_id,
                 tokenizer=self._tokenizer,
@@ -115,16 +145,28 @@ class MiniCPMo:
                 generate_audio=self._generate_audio,
             )
 
+            first_response_time = None
+            response_count = 0
+            audio_extract_time = 0
+
             for response in response_generator:
+                if first_response_time is None:
+                    first_response_time = time.perf_counter() - generation_start
+                    print(f"First response at: {first_response_time:.3f}s after generation start")
+
+                response_count += 1
                 audio = None
                 sample_rate = INPUT_OUTPUT_AUDIO_SAMPLE_RATE
                 text = None
 
+                # time audio extraction
+                audio_extract_start = time.perf_counter()
                 # extract audio from response
                 if hasattr(response, "audio_wav"):
                     has_audio = True
                     sample_rate = getattr(response, "sampling_rate", INPUT_OUTPUT_AUDIO_SAMPLE_RATE)
                     audio = response.audio_wav.cpu().detach().numpy()
+                audio_extract_time += time.perf_counter() - audio_extract_start
 
                 # check for text
                 if isinstance(response, dict):
@@ -145,6 +187,17 @@ class MiniCPMo:
                 if isinstance(text, str) and text:
                     has_text = True
                     yield text
+            
+            generation_time = time.perf_counter() - generation_start
+            total_inference_time = time.perf_counter() - inference_start
+
+            print(f"INFERENCE BREAKDOWN:")
+            print(f"   Prefill time: {prefill_time:.3f}s")
+            print(f"   Generation time: {generation_time:.3f}s")
+            print(f"   First response time: {first_response_time:.3f}s")
+            print(f"   Audio extract time: {audio_extract_time:.3f}s")
+            print(f"   Response count: {response_count}")
+            print(f"   Total inference time: {total_inference_time:.3f}s")
 
             yield None
 

@@ -1,3 +1,7 @@
+# Process Documentation
+
+See optimization process documentation in `solution-documentation.txt`.
+
 # Installation
 
 1. Install dependencies:

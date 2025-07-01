@@ -159,3 +159,52 @@ Unfortunately this is a regression, so `sdpa` it is.
 ### Quantization
 
 Went down a rabbit hole trying to use a pre-quantized version of MiniCPM-0-2_6 and enabling variable quantization with `BitsAndBytes`. Because of time constraints and container image complexity, this was tossed.
+
+## Final Benchmarks
+
+The two optimizations kept were model compilation and model precision.
+
+These changes were reverted and the inference was run thrice with the original implementation for comparison:
+
+**Original metrics**
+
+```txt
+AGGREGATE PERFORMANCE METRICS:
+    Average time to first byte: 
+        run1: 1.639s
+        run2: 1.537s
+        run3: 1.593s
+    Average realtime factor:
+        run1: 1.099
+        run2: 0.975
+        run3: 1.071
+```
+
+TTFB            = ~(1.639 + 1.537 + 1.593)/3 = ~1.590
+Realtime Factor = ~(1.099 + 0.975 + 1.071)/3 = ~1.048
+
+**Optimized metrics**
+
+```txt
+AGGREGATE PERFORMANCE METRICS:
+    Average time to first byte: 
+        run1: 2.060s
+        run2: 1.539s
+        run3: 1.289s
+    Average realtime factor:
+        run1: 1.022
+        run2: 1.000
+        run3: 0.781
+```
+
+TTFB            = ~(2.060 + 1.539 + 1.289)/3 = ~1.629
+Realtime Factor = ~(1.022 + 1.000 + 0.781)/3 = ~0.934
+
+Original and optimized audio samples were saved to `audio_orig` and `audio_opt` respectively, for comparison.
+
+TTFB: Worsened from 1.590s to 1.629s (+2.5%)
+Realtime Factor: Improved from 1.048 to 0.934 (-10.9%)
+
+Audio was spot checked for differences in quality and none were found.
+
+_NOTE: My wife fell ill the night I recieved this take home and our usual childcare fell through. I was in and out with this task and apologize for the much longer than desirable submission time (~24h later)._

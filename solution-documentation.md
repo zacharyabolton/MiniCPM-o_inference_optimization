@@ -97,34 +97,62 @@ The results of doing so are:
 
 ```txt
 AGGREGATE PERFORMANCE METRICS:
-   Average time to first byte: 1.339s
-   Average realtime factor: 0.825
-   Average generation time: 10.069s
-   Average audio processing time: 0.000s
-   TTFB std dev: 0.010s
-   Realtime factor std dev: 0.073
-```
-
-```txt
-AGGREGATE PERFORMANCE METRICS:
-   Average time to first byte: 1.617s
-   Average realtime factor: 1.060
-   Average generation time: 8.089s
-   Average audio processing time: 0.000s
-   TTFB std dev: 0.038s
-   Realtime factor std dev: 0.034
-```
-
-```txt
-AGGREGATE PERFORMANCE METRICS:
-   Average time to first byte: 1.420s
-   Average realtime factor: 0.878
-   Average generation time: 6.093s
-   Average audio processing time: 0.000s
-   TTFB std dev: 0.069s
-   Realtime factor std dev: 0.049
+    Average time to first byte: 
+        run1: 1.339s
+        run2: 1.617s
+        run3: 1.420s
+    Average realtime factor:
+        run1: 0.825
+        run2: 1.060
+        run3: 0.878
 ```
 
 Two of these three runs shows a nice bump, while one of them regresses back to our initial performance. This shows the variability and our perf measurements and begs for more robust benchmarking.
 
 For now, we will just run each test thrice to obtain more robust measures.
+
+### Flash Attention vs Scaled Dot Product
+
+Even though flash attention is better optimized for long input lengths, it is worth trying even though we are dealing with short inputs.
+
+The results of three runs are:
+
+```txt
+AGGREGATE PERFORMANCE METRICS:
+    Average time to first byte: 
+        run1: 1.873s
+        run2: 1.872s
+        run3: 1.955s
+    Average realtime factor:
+        run1: 1.066
+        run2: 1.066
+        run3: 1.150
+```
+
+Not good, but there's a potentially important error message in the CLI:
+
+```
+You are attempting to use Flash Attention 2.0 with a model not initialized on GPU. Make sure to move the model to GPU after initializing it on CPU with `model.to('cuda')`.
+/usr/local/lib/python3.11/site-packages/transformers/models/auto/image_processing_auto.py:513: FutureWarning: The image_processor_class argument is deprecated and will be removed in v4.42. Please use `slow_image_processor_class`, or `fast_image_processor_class` instead
+  warnings.warn(
+Loading checkpoint shards:  75%|███████▌  | 3/4 [00:03<00:01,  1.32s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.68s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.55s/it]
+```
+
+Reaing up on the error (https://github.com/openai/whisper/discussions/1948#discussioncomment-8074335) indicates we need to load the model onto CPU first and then move to GPU seperately.
+
+This was done, and the following results were obtained.
+
+```txt
+AGGREGATE PERFORMANCE METRICS:
+    Average time to first byte: 
+        run1: 1.539s
+        run2: 1.858s
+        run3: 1.601s
+    Average realtime factor:
+        run1: 0.834
+        run2: 1.076
+        run3: 0.915
+```
+
+Unfortunately this is a regression, so `sdpa` it is.
+

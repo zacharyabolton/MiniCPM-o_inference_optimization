@@ -20,8 +20,6 @@ class AudioData(BaseModel):
 
 class MiniCPMo:
     def __init__(self, device: Literal["cpu", "cuda"] = "cuda", model_revision: str = "main"):
-        super().__init__()
-
         print(f"Initializing MiniCPMo model...")
         init_start = time.perf_counter()
 
@@ -30,18 +28,14 @@ class MiniCPMo:
             torch.backends.cuda.matmul.allow_tf32 = True
             torch.backends.cudnn.allow_tf32 = True
 
-        self.model = (
-            AutoModel.from_pretrained(
-                "openbmb/MiniCPM-o-2_6",
-                trust_remote_code=True,
-                attn_implementation="sdpa",
-                torch_dtype=torch.bfloat16,
-                revision=model_revision,
-                low_cpu_mem_usage=True,
-            )
-            .eval()
-            .to(device)
-        )
+        self.model = AutoModel.from_pretrained(
+                        "openbmb/MiniCPM-o-2_6",
+                        trust_remote_code=True,
+                        attn_implementation="sdpa",
+                        torch_dtype=torch.bfloat16,
+                        revision=model_revision,
+                        low_cpu_mem_usage=True,
+                    ).eval().to(device)
 
         tokenizer_start = time.perf_counter()
         self._tokenizer = AutoTokenizer.from_pretrained(
@@ -101,7 +95,6 @@ class MiniCPMo:
 
     def _prefill(self, data: List[str | AudioData]):
         try:
-            audio_arrays = []
             for prefill_data in data:
                 if isinstance(prefill_data, str):
                     text = prefill_data
@@ -173,7 +166,6 @@ class MiniCPMo:
                 audio_extract_start = time.perf_counter()
                 # extract audio from response
                 if hasattr(response, "audio_wav"):
-                    has_audio = True
                     sample_rate = getattr(response, "sampling_rate", INPUT_OUTPUT_AUDIO_SAMPLE_RATE)
                     audio = response.audio_wav.cpu().detach().numpy()
                 audio_extract_time += time.perf_counter() - audio_extract_start
@@ -195,7 +187,6 @@ class MiniCPMo:
 
                 # put text in output queue
                 if isinstance(text, str) and text:
-                    has_text = True
                     yield text
             
             generation_time = time.perf_counter() - generation_start

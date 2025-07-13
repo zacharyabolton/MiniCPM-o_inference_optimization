@@ -1,6 +1,8 @@
 # Process Documentation
 
-See optimization process documentation in `solution-documentation.txt`.
+See initial optimization process documentation in `solution-documentation.txt`.
+
+See further optimization process documentation in `solution-documentation-2.txt`.
 
 # Installation
 

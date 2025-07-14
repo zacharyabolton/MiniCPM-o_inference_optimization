@@ -119,7 +119,10 @@ class MinicpmInferenceEngine:
         print(f"\nStarting inference for: '{text}'")
         inference_start = time.perf_counter()
 
-        audio_data = []
+        buffer_size = 24000 * 15
+        audio_buffer = np.zeros(buffer_size, dtype=np.float32)
+        current_pos = 0
+
         time_to_first_byte = None
         time_to_first_audio = None
         audio_processing_time = 0
@@ -142,17 +145,32 @@ class MinicpmInferenceEngine:
                     
                 # time audo processing
                 audio_proc_start = time.perf_counter()
-                audio_data.append(item.array)
+
+                new_chunk = item.array
+                chunk_len = len(new_chunk)
+
+                if current_pos + chunk_len > buffer_size:
+                    # Double the buffer size if it's too small
+                    new_buffer_size = buffer_size * 2
+                    print(f"Resizing audio buffer from {buffer_size} to {new_buffer_size}")
+                    new_buffer = np.zeros(new_buffer_size, dtype=np.float32)
+                    new_buffer[:current_pos] = audio_buffer[:current_pos]
+                    audio_buffer = new_buffer
+                    buffer_size = new_buffer_size
+                
+                audio_buffer[current_pos : current_pos + chunk_len] = new_chunk
+                current_pos += chunk_len
+
                 audio_processing_time += time.perf_counter() - audio_proc_start
 
         generation_time = time.perf_counter() - inference_start
 
-        if len(audio_data) == 0:
+        if current_pos == 0:
             raise ValueError("No audio data received")
         
         # time final audio concat
         concat_start = time.perf_counter()
-        full_audio = np.concatenate(audio_data)
+        full_audio = audio_buffer[:current_pos]
         concat_time = time.perf_counter() - concat_start
 
         total_time = time.perf_counter() - inference_start

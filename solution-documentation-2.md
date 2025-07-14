@@ -71,3 +71,27 @@ class OmniLMMModel(MistralModel):
 ```
 
 This should be changed to a `transformers.StaticCache` or `DynamicCache` dtype, and updated accordingly wherever `OmniLMMModel.forward` is called. However, due to time constraints, I did not attempt to alter the package or PR a contrib. Might later.
+
+## Audio Buffering Improvements
+
+Currently in `MinicpmInferenceEngine.run` we are extending a Python list as each audio chunk comes in. This could be improved by pre-allocating a numpy array.
+
+This was done with care taken to overflow scenarios (which did not present) and the following runs were executed:
+
+```txt
+AGGREGATE PERFORMANCE METRICS:
+    Average time to first byte: 
+        run1: 1.322s
+        run2: 1.356s
+        run3: 1.402s
+    Average realtime factor:
+        run1: 0.827
+        run2: 0.830
+        run3: 0.869
+```
+
+TTFB            = ~(1.322 + 1.356 + 1.402)/3 = ~1.360s
+Realtime Factor = ~(0.827 + 0.830 + 0.869)/3 = ~0.842
+
+TTFB: Improved from 1.590s to 1.360s (-14.5%)
+Realtime Factor: Improved from 1.048 to 0.842 (-19.7%)
